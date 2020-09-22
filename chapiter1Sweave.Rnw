@@ -1,0 +1,337 @@
+\documentclass{report}
+\usepackage{titlesec} 
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{colortbl}
+\usepackage{eurosym}
+%\usepackage{newtxtext,mathptmx}
+\usepackage{xcolor}
+\usepackage[inner=25mm,outer=25mm,top=30mm,bottom=20mm,headheight=13.6pt]{geometry} %marges
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{fancyhdr}
+\usepackage{mathtools}
+%\usepackage{graphics}
+\usepackage{graphicx} 
+\usepackage{color}
+\usepackage{float}
+\usepackage{hyperref,wasysym}
+\usepackage{ulem}
+\usepackage{placeins}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{color}  
+\usepackage[french]{babel}  
+\usepackage{graphicx}
+\usepackage{subcaption}
+%\usepackage[export]{adjustbox}
+\usepackage{wrapfig}
+\usepackage{textpos}
+\usepackage{comment}
+%\usepackage{fancybox}
+\usepackage{lmodern} %correction d'affichage
+\usepackage{csquotes} %guillemets français
+\usepackage{setspace} %interligne
+\usepackage{chngcntr} %compteurs modifiables
+\usepackage{mathpazo}
+\usepackage{amsfonts}
+\usepackage{array}
+\usepackage{etoolbox} %idem
+\usepackage{color} %gestion des couleurs
+\usepackage{setspace} %interligne
+%\usepackage{natbib} %pour pouvoir ne citer que 
+\usepackage{chngcntr} %compteurs modifiables
+\usepackage{url} %gestion des liens hypertextes
+\usepackage{blindtext} %génération de texte aléatoire : \Blindtext
+\usepackage{tikz} %dessin (
+\counterwithout{figure}{chapter} %permet un numérotage des figures indépendant des chapitres
+\frenchspacing %adaptation normes françaises
+\FrenchFootnotes %adaptation normes françaises
+\setcounter{secnumdepth}{4} %chapitrage à 4 niveaux (ex: 1.2.2.3. Lorem Ipsum)
+\setcounter{tocdepth}{4} % chapitrage à 4 niveaux dans le sommaire
+\setlength{\parindent}{0pt}
+\definecolor{LightBlue}{RGB}{66, 163, 251}
+\definecolor{DarkBlue}{RGB}{36, 100, 176}
+\definecolor{LightGray}{gray}{.94}
+\definecolor{DarkGray}{gray}{.172}
+\definecolor{Orange}{RGB}{229, 133, 3}
+\definecolor{MediumBlue}{RGB}{38, 119, 193}
+
+
+\newtheorem{The}{Théorème}[section]
+\newtheorem{Pro}[The]{Proposition}
+\newtheorem{Def}[The]{Definition}
+\titleformat*{\section}{\color{DarkBlue}\normalfont\LARGE}
+\titleformat*{\subsection}{\color{LightBlue}\normalfont\Large}
+\titleformat*{\subsubsection}{\color{MediumBlue}\normalfont\large}
+
+\begin{document}
+\begin{titlepage}
+
+\begin{textblock*}{1cm}(0.0005cm,-0.52cm)
+\end{textblock*}
+\begin{textblock*}{6cm}(9.5cm,-1.05cm)
+\end{textblock*}
+\begin{tikzpicture}[remember picture,overlay]
+	\draw[very thick]
+		([yshift=-15pt,xshift=15pt]current page.north west)--
+		([yshift=-15pt,xshift=-15pt]current page.north east)--
+		([yshift=15pt,xshift=-15pt]current page.south east)--
+		([yshift=15pt,xshift=15pt]current page.south west)--cycle;
+\end{tikzpicture}
+	\textsc{\LARGE }\\[4 cm]
+	\vfill
+	\centering
+    \vspace*{0 cm}
+    \color{black}
+	\textsc{\LARGE Master 2 Actuariat Parcours Data science pour l'actuariat}\\[7.8 cm]
+	\textsc{\Large \textbf{TIME SERIES}}\\[7.8 cm]
+	\textsc{\Large \color{DarkBlue}{Cheikh Mbacké BEYE}}\\[7.8 cm]
+
+\end{titlepage}
+\tableofcontents
+\newpage
+\section*{Environment}
+<<>>=
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width=12,
+                      comment = NA,
+                      message = FALSE,
+                      warning=FALSE,
+                      background="#ccffcc"
+                      )
+@
+
+<<>>=
+library(ggplot2)
+library(astsa)
+library(xts)
+@
+
+\section*{INTRODUCTION}
+Data obtained from observations collected sequentially over time are extremely common. In bussines we observe weekly interest rates, daily closing stock prices, monthly prices indices, yearly sales figures, and so forth. In meterology, we observe daily  temperatures, annual precipitation and drought indices and hourly wind speeds. In agriculture, we record annual figures for crop and livestock prooduction, soil erosion, and export sales. In the biological science , we observe the electrical activity of the heart at millisecond intervals. In ecology, we record the abundance of animal species. The list of areas in which **times series** are studies is virtually endless. The purpose of time series analysis is generaly twofold : to undestand or model the stochastic mechanism that gives rise to an observed series and to predict or forecast the future values of a series based on the history of that series and possibily other related factors.
+We will introduces a variety of examples of time series from diverse areas of application. A somewhat unique feature of time series and their models is that we usually cannot assume that the observations are independently from a common population. Studying models that incoperate dependence is the key concept in time series analysis.
+\section*{TIME SERIES EXAMPLES}
+\subsection*{Johnson and Johnson Quarterly Earnings Per Share}
+<<>>=
+jj
+tseries<-data(jj)
+plot(jj,
+     type='o',
+     ylab='Quartely Earnings per Share',
+     frame=FALSE,
+     col='steel blue'
+     )
+@
+
+This figure shows quaterly earnings per shape for the US company Johnson and Johnson, furnished by Professor Paul Griffin. There are 84 quaters (84/4=21 years) measured from the first quarter of 1960 to the last quarter of 1980. Modelling such a series begins by observing the primary patterns in the time history?. In this case, note the gradualy increasing underlying trend anf the rather regular variation superimposedon on the trend that seems to repeat over quarters .
+
+\subsection*{Global mean land-ocean temperature deviations to 2015}
+
+<<>>=
+globtemp
+tseries<-data(jj)
+plot(globtemp,
+     type='o',
+     ylab='Global temperture deviations over year',
+     frame=FALSE,
+     col='steel blue'
+     )
+@
+
+The figure shows the global temperature series record. The data are the global mean land-ocean temperature index from 1880 to 2015. We note an apparent upward trend in the series during the latter part of the twentieth century that has been used as an argument for the gloabal warming hypothesis. Note also the leveling off at about 1935 and then another rather sharp upward trend at about 1970.
+
+\subsection*{Dow Jones Industrial Average}
+
+<<>>=
+
+djia[1:10]
+djiaReturns<-diff(log(djia$Close))[-1]
+plot(djiaReturns,
+     main='DJIA returns',
+     frame=FALSE,
+     col='steel blue'
+     )
+
+@
+This an example of financial time series data. It shows the daily returns of the Dow Jones Industrial Average from april 20, 2006 to april 20, 2016. This a typical of  return data.  The mean of the series appears to be stable with an average return approximately zero. A problem in the nalaysis of these type of financial data is to forcast the volatility of future returns. It's easy to spot the financial crisis of 2008.
+
+\subsection*{ Seismic Trace of Explosion and  Earthquake  }
+
+<<>>=
+plot(EXP6,
+     main='Expolsion',
+     frame=FALSE,
+     col='steel blue'
+     )
+plot(EQ5,
+     main='Earthquake',
+     frame=FALSE,
+     col='steel blue'
+)
+@
+These two last examples represent two phases denoted by $P(t=1,...;1024)$ and $S(t=1025,...,2048)$ at a seismic recording station. The recording instruments in Scandinavia are observing earthquake and mining explosion. The general problem of intrest is in distinguishing or discriminating between waveforms generated by earthquakes and those generated by explosion . We can also focus oçn the amplitude ratios between the two phases,which tend to be smaller for earhtquakes than for explosions.
+
+\section*{WHITE NOISE}
+A simple kind of generated series might be a collection of uncorrelated random variables, $(\epsilon_t)_{t\in \mathbb{Z}}$ with mean 0 and finite variance $\sigma^2$. The time series generated from uncorrelated variables is used as a model for noise in engenerring applications where it is called $white~noise$. The designation white originates from the analogy with white light and indicates that all possible periodic oscilllations are present with equal strength.
+
+We will sometimes require the noise to be independent and identically distributed (iid). A particulary useful white noise series is Gaussian white noise  where $\epsilon_t\approx\mathcal{N}(0,\sigma^2)$
+
+<<>>=
+set.seed(123)
+plot.ts(rnorm(500),
+        frame=FALSE,
+        main='White noise',
+        col='steel blue'
+        )
+@
+
+
+
+We note mixture of many diffirent kinds of oscillations. But the white noise alone cannot explained all time series behavior. If it was the case, classical statistical methods would suffice. 
+To model a time series for forcasting or predicting purpose, we should take account of serial correlation between observations.
+\section*{MOVING AVERAGE}
+We might replace the white noise series $\epsilon_t$ by a moving average that smooths the series. For example, consider replacing $\epsilon_t$ by an average of its current value and its immediate neighbors in the past and future. That is, let
+
+$$X_t=\frac{1}{3}\big(\epsilon_{t-1}+\epsilon_{t}+\epsilon_{t-2}\big)$$
+To get the moving averge we can use the command $filter$ in $stats$ package.
+
+filter($x$, $filter$, $method$= c("convolution", "recursive"),$sides$= 2, $circular$ = FALSE)
+
+\textbf{Arguments}:\\
+\begin{enumerate}
+ \item x	a univariate or multivariate time series.
+\item filter a vector of filter coefficients in reverse time order (as for AR or MA coefficients).
+
+\item method	Either $convolution$ or $recursive$ (and can be abbreviated). If "convolution" a moving average is used: if "recursive" an autoregression is used.
+
+\item sides	for convolution filters only. If sides = 1 the filter coefficients are for past values only; if sides = 2 they are centred around lag 0. In this case the length of the filter should be odd, but if it is even, more of the filter is forward in time than backward.
+
+\item circular for convolution filters only. If TRUE, wrap the filter around the ends of the series, otherwise assume external values are missing (NA).
+\end{enumerate}
+<<>>=
+
+ma<-stats::filter(rnorm(500),
+                  sides = 2,
+                  method = 'convolution',
+                  filter=rep(1/3,3),
+                )
+plot.ts(ma,
+     main = 'Moving averge',
+     frame.plot = FALSE,
+     col='steel blue'
+     )
+@
+
+Oscillations  are more apparent and some of the faster oscillations are taken out.
+
+\section*{AUTOREGRESSIONS}
+
+$$X_t=X_{t-1}-9X_{t-2}+\epsilon_t$$
+This equation represnts a regression or prediction of the current value $X_{t}$ of a times series as function of the past two values of the series. A problem with startup values exists because the equation depends on the initial conditions.
+
+The function $filter$ uses  zero for the initial values. To fix that we can run $filter$ for more than needed and remove the initial valaues.
+<<>>=
+areg<-stats::filter(rnorm(550),
+                  method = 'recursive',
+                  filter=c(1,-.9)
+                )
+plot.ts(areg[-(1:50)],
+     main = 'Autoregression',
+     frame.plot = FALSE,
+     col='steel blue'
+     )
+@
+
+
+
+\section*{RANDOM WALK WITH DRIFT}
+A model for anlysing trend such as seen in the global temperature data is the random walk with drift model given by 
+$$X_t=\delta+X_{t-1}+\epsilon_t ;\quad X_0=0$$
+$\delta$ is called drift and when $\delta=0$ is called simply a random walk.
+
+$$X_t=\delta t+\sum_{i=1}^{t}\epsilon_i$$
+
+<<>>=
+
+wn<-rnorm(200)
+rwd<-cumsum(wn+0.2)
+rw<-cumsum(wn)
+plot.ts(rwd,
+        main='Random walk with drift',
+        col='steel blue',
+        frame=FALSE,
+        ylim=c(-5,50)
+        )
+lines(rw,
+      col='blue'
+      )
+abline(h=0,
+       lty=2,
+       col='blue'
+       )
+abline(a=0,
+       b=0.2,
+       lty=2,
+       col=' steel blue'
+       )
+@
+
+\section*{SIGNAL IN NOISE}
+ 
+Many realistic models for generating time series assume an undeerlying signal with some consitent periodic variation , contaminated by adding a random noise. 
+
+$$X_t=2\cos\big(2\pi\frac{t+15}{50}\big)+\epsilon_t$$
+
+\begin{enumerate}
+
+\item A=2 is the amplitude
+
+\item $\omega=\frac{1}{50}$ is the frequency of oscillations (one cycle every 50 time points)
+
+\item $\phi=2\pi\frac{15}{50}=0.6\pi$ is the phase shift
+\end{enumerate}
+<<>>=
+wn<-rnorm(500)
+cosinus<-2*cos(2*pi*1:500/50+.6*pi)
+plot.ts(cosinus,
+        col='steel blue',
+        frame=FALSE,
+        main=expression(2*cos(2*pi*t/50+.6*pi))
+        )
+plot.ts(cosinus+wn,
+        col='steel blue',
+        frame=FALSE,
+        main=expression(2*cos(2*pi*t/50+.6*pi)+N(0,1))
+        )
+plot.ts(cosinus+wn,
+        col='steel blue',
+        frame=FALSE,
+        main=expression(2*cos(2*pi*t/50+.6*pi)+N(0,20))
+        )
+@
+
+\section*{CLASSICAL REGRESSION IN TIMES SERIES CONTEXT}
+
+
+We begin our discusssion of linear regression in the time series context by assiming some ouput or dependaent time series say , $X_t$ for $t=1,..., t=n$ is being influenced by a collection of possible inputs or independent series say, $Z_{t_1},...,Z_{t_q}$, where we first regard the inputs as fixed and known. This assumption is for applying conventional linear regression.
+We express this relationship through the model
+$$X_t=\beta_0+\beta_1 Z_{t_1}+...+\beta_q Z_{t_q}+\epsilon_t$$
+
+Where the paremeters $\beta_0, \beta_1,...,\beta_q$ are unknown and $(\epsion_t)$ is random error or noise process consisting of indepndent and identically distrinuted normal variables.
+
+
+\section*{Example} 
+
+<<>>=
+fit<-lm(AirPassengers~time(AirPassengers),na.action = NULL)
+summary(fit)
+par(mfrow=c(2,1))
+plot(AirPassengers,col='steel blue',main='Air passengers')
+abline(fit,col='red',lwd=2)
+hist(fit$residuals,col = 'steel blue', border = 'cyan')
+@
+
+\end{document}

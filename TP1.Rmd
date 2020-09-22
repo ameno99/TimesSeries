@@ -1,0 +1,169 @@
+---
+title: "TIME SERIES TP 1"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message=FALSE,
+                      comment = NA,
+                      warning = NA,
+                      fig.width=12,
+                      fig.height = 6
+                      )
+```
+<style>
+div.blue pre {background-color:#ccffcc;}
+div.blue pre.r{background-color:#ccffff;}
+
+</style>
+<div class='blue'>
+
+```{r}
+library(ggplot2)
+library(astsa)
+library(dplyr)
+library(xts)
+```
+
+# EXERCISE 1
+
+## Question 1
+
+Ths *ts*($data$, $start$=1, $end$=numeric, $frequency$=1,...) function is used to create  a time series object.
+
+* $data$:  a vector or matrix of the observed time series
+
+* $start$: the time of the first observation
+
+* $end$: the time of the last observations , specified in the same way as start.
+
+* $frequency$: the numeber of observations par unit of time
+
+The *diff*(data)($x$, $lag$=1) returns suitably and iterated differences
+
+* $x$: a numeric vector or a  matrix containing the values to be differenced
+
+* $lag$: an integer indicating which lag to use
+
+## Question 2
+
+The *choose.file function choose a file interactively from the current repository.
+
+Not very efficient when we use rmarkdown for a final report.
+
+```{r}
+if(!exists('euro50')) 
+{
+    euro50<-read.csv('tableEurom.csv',header = TRUE)
+}
+head(euro50)
+```
+
+
+## Question 3
+
+The data contains different informations about a financial index  as: the prices at the opening and closing market, the lower and the higher price and so forth.
+
+*euro50[,7]* contains the price at the closing time.
+
+## Question 4
+
+```{r,fig.height=12}
+par(mfrow=c(2,2))
+tseries50<-ts(euro50)
+tslogdiff<-diff(log(tseries50[,7]))
+plot(tseries50[,7],
+     main='Adj.Close',
+     col='steel blue',
+     ylab='Adj.Close',
+     frame=FALSE
+    )
+plot(tslogdiff,
+     col='steel blue',
+     main='difference of log Adj.Close',
+     frame=FALSE
+     )
+hist(tslogdiff,
+     col='steel blue',
+     border = 'cyan',
+     )
+qqnorm(tslogdiff,
+       col='steel blue',
+       frame=FALSE,
+       )
+qqline(tslogdiff,
+       col='red',
+       lty=2,
+       lwd=2
+       )
+```
+
+# EXERCISE 2
+
+## Question 1
+
+```{r}
+raindata<-read.table('pluie1.txt',
+                     sep='',
+                     header = TRUE
+                     )
+head(raindata)
+tseriesrain<-ts(raindata$pluie,start = 1950,frequency = 12)
+par(mfrow=c(1,2))
+plot(tseriesrain,col='steel blue',main='Rain time series')
+aggregate(tseriesrain,1,sum)%>%plot(col='steel blue',main='Cumulated')
+```
+
+
+The last figure shows a downward trend. We also notice the independence of aggregated data.
+
+# EXERCISE
+
+
+## Question 1
+
+
+```{r,fig.height=12}
+n<-1000
+wn<-rnorm(n)
+par(mfrow=c(2,2))
+plot.ts(wn,col='steel blue',main='White noise')
+acf(wn)
+qqnorm(ts(wn),
+       col='steel blue',
+       frame=FALSE,
+       )
+qqline(ts(wn),
+       col='red',
+       lty=2,
+       lwd=2
+       )
+hist(ts(wn),col='steel blue',border = 'cyan')
+```
+
+
+## Question 2
+
+```{r}
+shapiro.test(ts(wn))
+```
+The null hypothesis (observed data distribution is normal) can be reject. 
+
+## Question 3
+
+```{r,fig.height=12}
+par(mfrow=c(2,3))
+for(k in 1:6){rnorm(500)%>%ts()%>%acf()}
+```
+

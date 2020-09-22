@@ -1,0 +1,162 @@
+---
+title: "TIMES SERIES"
+author: "Cheikh Mbacké BEYE"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message=FALSE,
+                      comment = NA,
+                      warning = NA,
+                      fig.width=12,
+                      fig.height = 6
+                      )
+```
+<style>
+div.blue pre {background-color:#ccffcc;}
+div.blue pre.r{background-color:#ccffff;}
+
+</style>
+<div class='blue'>
+
+```{r}
+library(ggplot2)
+library(astsa)
+library(xts)
+```
+
+# LAKE HURON
+
+```{r}
+LakeHuron
+plot(LakeHuron,
+     col='steel blue',
+     frame=FALSE,
+     main="Level of Lake Huron"
+     )
+```
+Annual measurements of the level, in feet, of Lake Huron 1875–1972.
+
+
+# TIME SERIES SIMULATION
+
+We can sumulate times series using r command.
+
+## White noise
+
+```{r White-Noise}
+n<-500
+wn<-rnorm(n)
+plot.ts(wn,
+     col='steel blue',
+     main='White noise',
+     frame.plot = FALSE
+     )
+```
+
+## Random walk
+
+```{r Random-Walk}
+n<-500
+rwalk<-cumsum(rnorm(n))
+plot.ts(rwalk,
+     col='steel blue',
+     main='Random walk',
+     frame.plot = FALSE
+     )
+```
+
+## Another random walk
+
+```{r}
+rwalk2<-cumsum(rnorm(n)+rnorm(n))
+plot.ts(rwalk2,
+     col='steel blue',
+     main='random walk 2',
+     frame.plot = FALSE
+     )
+
+
+```
+
+## Cumulated random walk 
+
+```{r}
+rwalk3<-cumsum(cumsum(rnorm(n)))
+plot.ts(rwalk3,
+     col='steel blue',
+     main='cumulated random walk',
+     frame.plot = FALSE
+     )
+
+rwalk4<-cumsum(cumsum(rnorm(n)+rnorm(n)+rnorm(n)))
+plot.ts(rwalk4,
+     col='steel blue',
+     main='cumulated random walk',
+     frame.plot = FALSE
+     )
+```
+
+## With a trend
+
+```{r}
+tseries<-1-(1:n)/100+cumsum(rnorm(n))+.2*rnorm(n)
+plot.ts(tseries,
+        col='steel blue',
+        frame=FALSE
+        )
+
+```
+```{r}
+x<-(1:n)/100
+tseries1<- .3 + .5*cos(2*pi*x) - 1.2*sin(2*pi*x) +
+      .6*cos(2*2*pi*x) + .2*sin(2*2*pi*x) +
+      -.5*cos(3*2*pi*x) + .8*sin(3*2*pi*x)+0.2*rnorm(n)
+  
+plot.ts(tseries1,
+        col='steel blue',
+        frame=FALSE,
+        )
+```
+
+# AUTOCORRELATION
+
+Ttme series observations are not independent, to check the dependence we can use the autocorrelation function. In R the autocorrelation is computed using the _acf_ function.
+
+```{r, fig.height=12}
+par(mfrow=c(4,2))
+acf(LakeHuron,main='Lake Huron')
+acf(wn,main='White noise')
+acf(rwalk,main=names(rwalk))
+acf(rwalk2,main=names(rwalk2))
+acf(rwalk3,main=names(rwalk3))
+acf(rwalk4,main=names(rwalk4))
+acf(tseries,main=names(tseries))
+acf(tseries1,main=names(tseries1))
+```
+
+
+```{r}
+co2
+plot.ts(co2,
+        col="steel blue",
+        frame=FALSE
+        )
+y<-diff(co2,lag=12)
+x<-diff(co2)
+par(mfrow=c(2,2))
+plot.ts(y,col='steel blue')
+plot.ts(x,col='steel blue')
+acf(x)
+acf(y)
+```
+

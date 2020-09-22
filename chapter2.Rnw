@@ -1,0 +1,201 @@
+\documentclass{report}
+\usepackage{titlesec} 
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{colortbl}
+\usepackage{eurosym}
+%\usepackage{newtxtext,mathptmx}
+\usepackage{xcolor}
+\usepackage[inner=25mm,outer=25mm,top=30mm,bottom=20mm,headheight=13.6pt]{geometry} %marges
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{fancyhdr}
+\usepackage{mathtools}
+%\usepackage{graphics}
+\usepackage{graphicx} 
+\usepackage{color}
+\usepackage{float}
+\usepackage{hyperref,wasysym}
+\usepackage{ulem}
+\usepackage{placeins}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{color}  
+\usepackage[french]{babel}  
+\usepackage{graphicx}
+\usepackage{subcaption}
+%\usepackage[export]{adjustbox}
+\usepackage{wrapfig}
+\usepackage{textpos}
+\usepackage{comment}
+%\usepackage{fancybox}
+\usepackage{lmodern} %correction d'affichage
+\usepackage{csquotes} %guillemets français
+\usepackage{setspace} %interligne
+\usepackage{chngcntr} %compteurs modifiables
+\usepackage{mathpazo}
+\usepackage{amsfonts}
+\usepackage{array}
+\usepackage{etoolbox} %idem
+\usepackage{color} %gestion des couleurs
+\usepackage{setspace} %interligne
+%\usepackage{natbib} %pour pouvoir ne citer que 
+\usepackage{chngcntr} %compteurs modifiables
+\usepackage{url} %gestion des liens hypertextes
+\usepackage{blindtext} %génération de texte aléatoire : \Blindtext
+\usepackage{tikz} %dessin (
+\counterwithout{figure}{chapter} %permet un numérotage des figures indépendant des chapitres
+\frenchspacing %adaptation normes françaises
+\FrenchFootnotes %adaptation normes françaises
+\setcounter{secnumdepth}{4} %chapitrage à 4 niveaux (ex: 1.2.2.3. Lorem Ipsum)
+\setcounter{tocdepth}{4} % chapitrage à 4 niveaux dans le sommaire
+\setlength{\parindent}{0pt}
+\definecolor{LightBlue}{RGB}{66, 163, 251}
+\definecolor{DarkBlue}{RGB}{36, 100, 176}
+\definecolor{LightGray}{gray}{.94}
+\definecolor{DarkGray}{gray}{.172}
+\definecolor{Orange}{RGB}{229, 133, 3}
+\definecolor{MediumBlue}{RGB}{38, 119, 193}
+
+
+\newtheorem{The}{Théorème}[section]
+\newtheorem{Pro}[The]{Proposition}
+\newtheorem{Def}[The]{Definition}
+\titleformat*{\section}{\color{DarkBlue}\normalfont\LARGE}
+\titleformat*{\subsection}{\color{LightBlue}\normalfont\Large}
+\titleformat*{\subsubsection}{\color{MediumBlue}\normalfont\large}
+
+\begin{document}
+\begin{titlepage}
+
+\begin{textblock*}{1cm}(0.0005cm,-0.52cm)
+\end{textblock*}
+\begin{textblock*}{6cm}(9.5cm,-1.05cm)
+\end{textblock*}
+\begin{tikzpicture}[remember picture,overlay]
+	\draw[very thick]
+		([yshift=-15pt,xshift=15pt]current page.north west)--
+		([yshift=-15pt,xshift=-15pt]current page.north east)--
+		([yshift=15pt,xshift=-15pt]current page.south east)--
+		([yshift=15pt,xshift=15pt]current page.south west)--cycle;
+\end{tikzpicture}
+	\textsc{\LARGE }\\[4 cm]
+	\vfill
+	\centering
+    \vspace*{0 cm}
+    \color{black}
+	\textsc{\LARGE Master 2 Actuariat Parcours Data science pour l'actuariat}\\[7.8 cm]
+	\textsc{\Large \textbf{TIME SERIES}}\\[7.8 cm]
+	\textsc{\Large \color{DarkBlue}{Cheikh Mbacké BEYE}}\\[7.8 cm]
+
+\end{titlepage}
+\tableofcontents
+\newpage
+\section*{Environment}
+<<>>=
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width=12,
+                      comment = NA,
+                      message = FALSE,
+                      warning=FALSE,
+                      background="#ccffcc"
+                      )
+@
+
+<<>>=
+library(ggplot2)
+library(astsa)
+library(xts)
+@
+
+\section*{LAKE HURON}
+<<>>=
+LakeHuron
+plot(LakeHuron,
+     col='steel blue',
+     frame=FALSE,
+     main="Level of Lake Huron"
+     )
+@
+
+
+Annual measurements of the level, in feet, of Lake Huron 1875–1972.
+
+\section*{TIME SERIES SIMULATION}
+
+We can sumulate times series using r command.
+
+\subsection*{White noise}
+
+
+<<>>=
+n<-500
+wn<-rnorm(n)
+plot.ts(wn,
+     col='steel blue',
+     main='White noise',
+     frame.plot = FALSE
+     )
+@
+
+
+\subsection*{Random walk}
+
+<<>>=
+n<-500
+rwalk<-cumsum(rnorm(n))
+plot.ts(rwalk,
+     col='steel blue',
+     main='Random walk',
+     frame.plot = FALSE
+     )
+@
+
+\section*{Another random walk}
+
+<<>>=
+rwalk2<-cumsum(rnorm(n)+rnorm(n))
+plot.ts(rwalk2,
+     col='steel blue',
+     main='random walk 2',
+     frame.plot = FALSE
+     )
+
+
+@
+
+
+\subsection*{Cumulated random walk }
+
+<<>>=
+rwalk3<-cumsum(cumsum(rnorm(n)))
+plot.ts(rwalk3,
+     col='steel blue',
+     main='cumulated random walk',
+     frame.plot = FALSE
+     )
+
+rwalk4<-cumsum(cumsum(rnorm(n)+rnorm(n)+rnorm(n)))
+plot.ts(rwalk4,
+     col='steel blue',
+     main='cumulated random walk',
+     frame.plot = FALSE
+     )
+@
+
+
+
+\subsection*{With a trend}
+
+<<>>=
+
+tseries<-1-(1:n)/100+cumsum(rnorm(n))+.2*rnorm(n)
+plot.ts(tseries,
+        col='steel blue',
+        frame=FALSE
+        )
+@
+
+\end{document}
